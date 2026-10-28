@@ -1,23 +1,20 @@
-import type { Metadata } from "next"
-import type { ReactNode } from "react"
-import { ChevronDown, Save, Trash2 } from "lucide-react"
-import { cn } from "cn"
-
-export const metadata: Metadata = {
-  title: "Add New Travel Package — Wanderlast",
-}
-
+"use client";
+import type { Metadata } from "next";
+import { useState, type ReactNode } from "react";
+import { ChevronDown, Save, Trash2 } from "lucide-react";
+import { cn } from "cn";
+import { Spinner } from "@/components/ui/spinner";
 const inputClass =
-  "h-12 w-full rounded bg-[#f4f7f9] px-4 text-base text-neutral-900 transition-colors placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-brand/40"
+  "h-12 w-full rounded bg-[#f4f7f9] px-4 text-base text-neutral-900 transition-colors placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-brand/40";
 
 function Field({
   label,
   htmlFor,
   children,
 }: {
-  label: string
-  htmlFor: string
-  children: ReactNode
+  label: string;
+  htmlFor: string;
+  children: ReactNode;
 }) {
   return (
     <div>
@@ -29,10 +26,48 @@ function Field({
       </label>
       {children}
     </div>
-  )
+  );
 }
 
 export default function AddNewTravelPackagePage() {
+  const [isLoading, setLoading] = useState(false);
+  const handelSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    setLoading(true);
+    const formData = new FormData(e.currentTarget);
+    const data = Object.fromEntries(formData.entries()) as {
+      category: string;
+      country: string;
+      departureDate: string;
+      description: string;
+      destinationName: string;
+      durationLabel: string;
+      rowHighlights: string;
+      imageUrl: string;
+      overview: string;
+      price: string;
+    };
+    const highlights = data.rowHighlights
+      .split("#")
+      .reduce<string[]>((acc, curr) => {
+        if (curr) {
+          acc.push(curr.trim());
+        }
+        return acc;
+      }, []);
+    const filteredData = { ...data, highlights };
+    const res = await fetch("http://localhost:5000/destination-data", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(filteredData),
+    });
+    const result = await res.json();
+    if (result.insertedId) {
+      setLoading(false);
+    }
+  };
   return (
     <main className="flex-1">
       <div className="mx-auto w-full max-w-[1280px] px-5 pt-14 pb-24 sm:px-6 lg:px-8 lg:pt-16">
@@ -41,7 +76,7 @@ export default function AddNewTravelPackagePage() {
         </h1>
 
         <div className="mx-auto mt-8 w-full max-w-[720px] rounded-md border border-neutral-200 bg-white p-7 lg:mt-12">
-          <form className="space-y-6">
+          <form className="space-y-6" onSubmit={handelSubmit}>
             <Field label="Destination Name" htmlFor="destination-name">
               <input
                 id="destination-name"
@@ -107,7 +142,7 @@ export default function AddNewTravelPackagePage() {
               <Field label="Duration" htmlFor="duration">
                 <input
                   id="duration"
-                  name="duration"
+                  name="durationLabel"
                   type="text"
                   placeholder="e.g., 7 Days/6 Nights"
                   className={inputClass}
@@ -123,7 +158,7 @@ export default function AddNewTravelPackagePage() {
                 required
                 className={cn(
                   inputClass,
-                  "[&::-webkit-calendar-picker-indicator]:opacity-40"
+                  "[&::-webkit-calendar-picker-indicator]:opacity-40",
                 )}
               />
             </Field>
@@ -142,25 +177,55 @@ export default function AddNewTravelPackagePage() {
               <textarea
                 id="description"
                 name="description"
-                rows={5}
+                rows={3}
                 placeholder="Describe the travel experience..."
                 className={cn(inputClass, "h-36 resize-y py-3")}
               />
             </Field>
-
+            <Field label="Overview" htmlFor="overview">
+              <textarea
+                id="overview"
+                name="overview"
+                rows={3}
+                placeholder="Describe the travel overview..."
+                className={cn(inputClass, "h-36 resize-y py-3")}
+              />
+            </Field>
+            <Field label="Highlights" htmlFor="highlights">
+              <textarea
+                id="highlights"
+                name="rowHighlights"
+                rows={3}
+                placeholder="#Watch clouds roll over the hills #Enjoy sunrise from a hilltop..."
+                className={cn(inputClass, "h-36 resize-y py-3")}
+              />
+            </Field>
             <div className="flex flex-col gap-3 pt-1 sm:flex-row sm:items-center sm:justify-end sm:gap-4">
               <button
                 type="reset"
                 className="inline-flex h-12 select-none items-center justify-center gap-2 rounded-md border border-red-500 bg-white px-5 text-base font-medium whitespace-nowrap text-red-500 transition-colors hover:bg-red-50 focus-visible:ring-3 focus-visible:ring-red-500/40 focus-visible:outline-none"
               >
-                <Trash2 aria-hidden="true" className="size-5" strokeWidth={1.5} />
+                <Trash2
+                  aria-hidden="true"
+                  className="size-5"
+                  strokeWidth={1.5}
+                />
                 Cancel
               </button>
               <button
+               disabled = {isLoading}
                 type="submit"
-                className="inline-flex h-12 select-none items-center justify-center gap-2 rounded-md bg-brand px-6 text-base font-medium whitespace-nowrap text-white transition-colors hover:bg-brand-dark focus-visible:ring-3 focus-visible:ring-brand/40 focus-visible:outline-none"
+                className={`${isLoading ? 'bg-[#d6f1f7] cursor-not-allowed':''} cursor-pointer inline-flex h-12 select-none items-center justify-center gap-2 rounded-md bg-brand px-6 text-base font-medium whitespace-nowrap text-white transition-colors hover:bg-brand-dark focus-visible:ring-3 focus-visible:ring-brand/40 focus-visible:outline-none`}
               >
-                <Save aria-hidden="true" className="size-5" strokeWidth={1.5} />
+                {isLoading ? (
+                  <Spinner data-icon="inline-start" className="inline" />
+                ) : (
+                  <Save
+                    aria-hidden="true"
+                    className="size-5"
+                    strokeWidth={1.5}
+                  />
+                )}
                 Add Travel Package
               </button>
             </div>
@@ -168,5 +233,5 @@ export default function AddNewTravelPackagePage() {
         </div>
       </div>
     </main>
-  )
+  );
 }

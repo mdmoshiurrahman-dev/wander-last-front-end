@@ -56,7 +56,7 @@ export function Banner() {
           </Link>
 
           <Link
-            href="/destinations"
+            href="/explore-all-destinations"
             className={cn(
               buttonVariants({ size: "lg" }),
               "h-12 w-full rounded-none bg-white/25 px-7 text-[13px] font-medium tracking-[0.08em] text-white uppercase backdrop-blur-sm hover:bg-white/35 hover:text-white focus-visible:ring-white/60 sm:w-auto",

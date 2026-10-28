@@ -1,8 +1,10 @@
 import type { Metadata } from "next";
 import { Josefin_Sans } from "next/font/google";
 import "./globals.css";
-import { Navbar } from "@/components/navbar";
-import { Footer } from "@/components/footer";
+import { Navbar } from "@/components/nav/navbar";
+import { Footer } from "@/components/footer/footer";
+import { Suspense } from "react";
+import NavSuspense from "@/components/nav/NavSuspense";
 const josefinSans = Josefin_Sans({
   subsets: ["latin"],
   variable: "--font-josefin-sans",
@@ -22,8 +24,12 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
       className={`${josefinSans.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col">
-        <Navbar />
-        {children}
+        <Suspense fallback={<NavSuspense />}>
+          <Navbar />
+        </Suspense>
+        <main className="flex flex-1">
+           {children}
+        </main>
         <Footer />
       </body>
     </html>
