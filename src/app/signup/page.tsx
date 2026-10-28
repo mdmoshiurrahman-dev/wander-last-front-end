@@ -1,6 +1,13 @@
+"use client";
 import Link from "next/link";
 import type { LucideIcon } from "lucide-react";
 import { Lock, Mail, User } from "lucide-react";
+import { signUp } from "@/lib/auth-client";
+import { useState } from "react";
+import { Spinner } from "@/components/ui/spinner";
+import { toast } from "@/components/ui/toast";
+import { filterGraphicalNotStackedItems } from "recharts/types/state/selectors/axisSelectors";
+import { useRouter } from "next/navigation";
 
 const inputClass =
   "h-9 w-full rounded border border-transparent bg-[#f4f7f9] pl-9 pr-3 text-sm text-neutral-900 transition-colors placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-brand/40";
@@ -71,6 +78,31 @@ function Field({
 }
 
 export default function SignUpPage() {
+  const router = useRouter();
+  const [isSigningUp, setIsSigningUp] = useState(false);
+  const handelSignUp = async (e: React.FormEvent<HTMLFormElement>) => {
+    setIsSigningUp(true);
+    e.preventDefault();
+    const formData = new FormData(e.currentTarget);
+    const data = Object.fromEntries(formData.entries()) as {
+      name: string;
+      email: string;
+      password: string;
+    };
+    const res = await signUp.email({
+      ...data,
+    });
+    if (res.data?.token) {
+      setIsSigningUp(false);
+      router.push("/");
+    } else {
+      setIsSigningUp(false);
+      toast.add({
+        type: "error",
+        description: res.error?.message,
+      });
+    }
+  };
   return (
     <section className="flex flex-1 flex-col items-center bg-[#f5f7f8] px-5 py-14 sm:px-6">
       <h1 className="text-[28px] leading-tight font-light text-neutral-900">
@@ -81,13 +113,13 @@ export default function SignUpPage() {
       </p>
 
       <div className="mt-8 w-full max-w-[400px] rounded border border-neutral-200 bg-white p-6 sm:p-7">
-        <form className="space-y-4">
+        <form className="space-y-4" onSubmit={handelSignUp}>
           <Field
             label="Full Name"
             htmlFor="full-name"
             icon={User}
             type="text"
-            name="fullName"
+            name="name"
             placeholder="Enter your name"
           />
           <Field
@@ -106,20 +138,22 @@ export default function SignUpPage() {
             name="password"
             placeholder="Create a password"
           />
-          <Field
-            label="Confirm Password"
-            htmlFor="confirm-password"
-            icon={Lock}
-            type="password"
-            name="confirmPassword"
-            placeholder="Confirm your password"
-          />
-
           <button
+            disabled={isSigningUp}
             type="submit"
-            className="mt-1 h-10 w-full cursor-pointer rounded bg-brand text-sm font-medium text-white transition-colors hover:bg-brand-dark focus-visible:ring-3 focus-visible:ring-brand/40 focus-visible:outline-none"
+            className={`${isSigningUp ? "cursor-not-allowed!" : "cursor-pointer"}mt-1 h-10 w-full  rounded bg-brand text-sm font-medium text-white transition-colors hover:bg-brand-dark focus-visible:ring-3 focus-visible:ring-brand/40 focus-visible:outline-none`}
           >
-            Create Account
+            {isSigningUp ? (
+              <span>
+                <Spinner
+                  data-icon="inline-start"
+                  className="inline mr-1 mb-0.5"
+                />
+                Creating Account
+              </span>
+            ) : (
+              "Create Account"
+            )}
           </button>
         </form>
 

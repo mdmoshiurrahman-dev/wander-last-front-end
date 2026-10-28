@@ -5,6 +5,7 @@ import { Navbar } from "@/components/nav/navbar";
 import { Footer } from "@/components/footer/footer";
 import { Suspense } from "react";
 import NavSuspense from "@/components/nav/NavSuspense";
+import { Toaster } from "@/components/ui/toast";
 const josefinSans = Josefin_Sans({
   subsets: ["latin"],
   variable: "--font-josefin-sans",
@@ -27,6 +28,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
         <Suspense fallback={<NavSuspense />}>
           <Navbar />
         </Suspense>
+        <Toaster />
         <main className="flex flex-1">
            {children}
         </main>

@@ -6,6 +6,9 @@ import Link from "next/link";
 import { Menu, User, X } from "lucide-react";
 import { cn } from "cn";
 import { usePathname } from "next/navigation";
+import { useSession } from "@/lib/auth-client";
+import SignoutBtn from "../auth/signOut/SignoutBtn";
+import SignOutSm from "../auth/signOut/SignOutSm";
 
 const navLinks = [
   { label: "Home", href: "/" },
@@ -18,11 +21,12 @@ const actionLinkClass =
   "text-base text-neutral-900 transition-colors hover:text-brand";
 
 export function Navbar() {
+  const session = useSession();
   const [menuOpen, setMenuOpen] = useState(false);
   const pathName = usePathname();
   return (
     <header className="relative z-40 w-full bg-white">
-      <div className="relative mx-auto flex h-20 w-full max-w-[1280px] items-center justify-between gap-4 px-5 sm:px-6 lg:px-8">
+      <div className="relative mx-auto flex h-20 w-full max-w-7xl items-center justify-between gap-4 px-5 sm:px-6 lg:px-8">
         <nav aria-label="Main" className="hidden items-center gap-7 lg:flex">
           {navLinks.map((link) => {
             const isActive = pathName === link.href;
@@ -59,25 +63,36 @@ export function Navbar() {
         </Link>
 
         <div className="flex items-center gap-4 sm:gap-7">
-          <Link
-            href="/profile"
-            aria-label="Profile"
-            className={cn(actionLinkClass, "flex items-center gap-1.5")}
-          >
-            <User aria-hidden="true" className="size-4" strokeWidth={1.75} />
-            <span className="hidden sm:inline">Profile</span>
-          </Link>
+          {session.data && (
+            <Link
+              href="/profile"
+              aria-label="Profile"
+              className={cn(actionLinkClass, "flex items-center gap-1.5")}
+            >
+              <User aria-hidden="true" className="size-4" strokeWidth={1.75} />
+              <span className="hidden sm:inline">Profile</span>
+            </Link>
+          )}
 
-          <Link
-            href="/login"
-            className={cn(actionLinkClass, "hidden sm:inline")}
-          >
-            Login
-          </Link>
+          {session.data ? (
+            <SignoutBtn />
+          ) : (
+            <>
+              <Link
+                href="/login"
+                className={cn(actionLinkClass, "hidden lg:inline")}
+              >
+                Login
+              </Link>
 
-          <Link href="/signup" className={actionLinkClass}>
-            Sign Up
-          </Link>
+              <Link
+                href="/signup"
+                className={cn(actionLinkClass, "hidden lg:inline")}
+              >
+                Sign Up
+              </Link>
+            </>
+          )}
 
           <button
             type="button"
@@ -118,14 +133,27 @@ export function Navbar() {
                 </Link>
               </li>
             ))}
-            <li className="mt-2 border-t border-neutral-200 pt-2 sm:hidden">
-              <Link
-                href="/login"
-                onClick={() => setMenuOpen(false)}
-                className="block rounded-md px-2 py-2.5 text-base text-neutral-900 transition-colors hover:bg-neutral-100 hover:text-brand"
-              >
-                Login
-              </Link>
+            <li className="mt-2 border-t border-neutral-200 pt-2">
+              {session.data ? (
+                <SignOutSm />
+              ) : (
+                <>
+                  <Link
+                    href="/login"
+                    onClick={() => setMenuOpen(false)}
+                    className="block rounded-md px-2 py-2.5 text-base text-neutral-900 transition-colors hover:bg-neutral-100 hover:text-brand"
+                  >
+                    SignIn
+                  </Link>
+                  <Link
+                    href="/signup"
+                    onClick={() => setMenuOpen(false)}
+                    className="block rounded-md px-2 py-2.5 text-base text-neutral-900 transition-colors hover:bg-neutral-100 hover:text-brand"
+                  >
+                    SignUp
+                  </Link>
+                </>
+              )}
             </li>
           </ul>
         </nav>

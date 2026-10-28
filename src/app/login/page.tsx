@@ -1,6 +1,12 @@
+"use client";
 import Link from "next/link";
 import type { LucideIcon } from "lucide-react";
 import { Lock, Mail } from "lucide-react";
+import { signIn } from "@/lib/auth-client";
+import { useRouter } from "next/navigation";
+import { useState } from "react";
+import { Spinner } from "@/components/ui/spinner";
+import { toast } from "@/components/ui/toast";
 
 const inputClass =
   "h-9 w-full rounded border border-transparent bg-[#f4f7f9] pl-9 pr-3 text-sm text-neutral-900 transition-colors placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-brand/40";
@@ -71,6 +77,34 @@ function Field({
 }
 
 export default function SignInPage() {
+  const router = useRouter();
+  const [isLoading, setIsLoading] = useState(false);
+  const handelOnSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    setIsLoading(true);
+    e.preventDefault();
+    const formData = new FormData(e.currentTarget);
+    const data = Object.fromEntries(formData.entries()) as {
+      name: string;
+      email: string;
+      password: string;
+      rememberMe?: string;
+    };
+    const res = await signIn.email({
+      ...data,
+      rememberMe: data.rememberMe ? true : false,
+    });
+    if (res.data?.token) {
+      setIsLoading(false);
+      router.push("/");
+    } else {
+      setIsLoading(false);
+      toast.add({
+        type: "error",
+        description: res.error?.message,
+      });
+    }
+  };
+
   return (
     <section className="flex flex-1 flex-col items-center bg-[#f5f7f8] px-5 py-14 sm:px-6">
       <h1 className="text-[28px] leading-tight font-bold text-neutral-900">
@@ -81,7 +115,7 @@ export default function SignInPage() {
       </p>
 
       <div className="mt-8 w-full max-w-[400px] rounded border border-neutral-200 bg-white p-6 sm:p-7">
-        <form className="space-y-4">
+        <form className="space-y-4" onSubmit={handelOnSubmit}>
           <Field
             label="Email Address"
             htmlFor="email"
@@ -124,7 +158,13 @@ export default function SignInPage() {
             type="submit"
             className="mt-1 h-10 w-full cursor-pointer rounded bg-brand text-sm font-medium text-white transition-colors hover:bg-brand-dark focus-visible:ring-3 focus-visible:ring-brand/40 focus-visible:outline-none"
           >
-            Sign In
+            {isLoading ? (
+              <span>
+                <Spinner className="inline" /> Signing In
+              </span>
+            ) : (
+              "Sign In"
+            )}
           </button>
         </form>
 
