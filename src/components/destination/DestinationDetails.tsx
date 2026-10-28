@@ -69,7 +69,7 @@ function DestinationDetails({ destination }: { destination: UserBooking }) {
           <p className="text-gray-600">Starting from</p>
           <h2 className="text-3xl text-brand">${destination.price}</h2>
           <p className="text-gray-600">per person</p>
-          <Booking />
+          <Booking destination ={destination} />
           <div>
             <ol>
               {conditionOfBooking.map((c, index) => (

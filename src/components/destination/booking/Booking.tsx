@@ -1,16 +1,82 @@
-'use client'
-import { ArrowRight } from 'lucide-react'
-import React from 'react'
+"use client";
+import { Spinner } from "@/components/ui/spinner";
+import { toast } from "@/components/ui/toast";
+import { useSession } from "@/lib/auth-client";
+import { UserBooking } from "@/types/UserBooking";
+import { ArrowRight } from "lucide-react";
+import React, { useState } from "react";
+const generateRandomId = (): string => {
+  const letters = "abcdefghijklmnopqrstuvwxyz";
+  const randomLetter = letters[Math.floor(Math.random() * letters.length)];
+  const randomDigit = Math.floor(Math.random() * 10);
 
-function Booking() {
+  return `${randomLetter}${randomDigit}`;
+};
+function Booking({ destination }: { destination: UserBooking }) {
+  const session = useSession();
+  const [isLoading, setIsLoading] = useState(false);
+  const handelBooking = async (e: React.FormEvent<HTMLFormElement>) => {
+    setIsLoading(true);
+    e.preventDefault();
+    const formData = new FormData(e.currentTarget);
+    const data = Object.fromEntries(formData.entries());
+    const completedBookingData = {
+      email: session.data?.user.email,
+      ...data,
+      id: destination._id,
+      destinationName: destination.destinationName,
+      price: destination.price,
+      bookingId: generateRandomId(),
+      imageUrl: destination.imageUrl,
+    };
+    const result = await fetch("http://localhost:5000/add_user_booking_data", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(completedBookingData),
+    });
+    const response = await result.json();
+    console.log(response);
+    if (response.success) {
+      setIsLoading(false);
+      toast.add({
+        type: "success",
+        description: response.message,
+      });
+    } else {
+      setIsLoading(false);
+      toast.add({
+        type: "warning",
+        description: response.message,
+      });
+    }
+  };
   return (
-    <div className='mb-3 mt-6'>
-        <form className='flex flex-col gap-3'>
-            <input type="date" className='py-3 bg-gray-100 px-2' />
-            <button className='bg-brand py-3 text-white cursor-pointer'>Book Now <ArrowRight className='inline'/> </button>
-        </form>
+    <div className="mb-3 mt-6">
+      <form className="flex flex-col gap-3" onSubmit={handelBooking}>
+        <input
+          type="date"
+          name="departureDate"
+          className="py-3 bg-gray-100 px-2"
+        />
+        <button
+          type="submit"
+          className="bg-brand py-3 text-white cursor-pointer"
+        >
+          {isLoading ? (
+            <span>
+              <Spinner className="inline mr-1" /> Booking...
+            </span>
+          ) : (
+            <span>
+              <ArrowRight className="inline" /> Book Now
+            </span>
+          )}
+        </button>
+      </form>
     </div>
-  )
+  );
 }
 
-export default Booking
+export default Booking;

@@ -1,29 +1,15 @@
 import type { Metadata } from "next";
 import {
-  Camera,
   DollarSign,
   Globe,
-  MapPin,
-  Pencil,
   Plane,
   TrendingUp,
 } from "lucide-react";
 import { cn } from "cn";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Button } from "@/components/ui/button";
-import { Card } from "@/components/ui/card";
-import Image from "next/image";
+import ProfileCart from "@/components/profile/ProfileCart";
 
 export const metadata: Metadata = {
   title: "My Profile — Wanderlast",
-};
-
-const profile = {
-  name: "Sarah Mitchell",
-  location: "San Francisco, CA",
-  avatarSrc: "/person1.png",
-  memberSince: "Mar 2024",
-  nationality: "United States",
 };
 
 const travelStats = [
@@ -65,66 +51,7 @@ export default function ProfilePage() {
         </p>
 
         <div className="mt-10 grid items-start gap-8 lg:grid-cols-[320px_1fr]">
-          <Card className="gap-5 rounded-lg p-6 ring-neutral-200">
-            <div className="flex flex-col items-center">
-              <div className="relative">
-                <div className="rounded-full flex justify-center items-center h-35 w-35 overflow-hidden">
-                  <Image
-                    src={profile.avatarSrc}
-                    alt="avater"
-                    height={150}
-                    width={150}
-                    className="object-cover object-center"
-                  ></Image>
-                </div>
-                {/* <AvatarFallback className="size-24 text-xl">
-                  {profile.name
-                    .split(" ")
-                    .map((part) => part[0])
-                    .join("")}
-                </AvatarFallback> */}
-                <button
-                  type="button"
-                  aria-label="Change profile photo"
-                  className="absolute right-3 bottom-3 flex translate-x-1 translate-y-1 items-center justify-center rounded-full bg-brand text-white ring-4 ring-white transition-colors hover:bg-brand-dark"
-                >
-                  <Camera aria-hidden="true" className="size-6 p-1.5" />
-                </button>
-              </div>
-
-              <h2 className="mt-4 font-heading text-xl font-semibold text-neutral-900">
-                {profile.name}
-              </h2>
-
-              <p className="mt-1 flex items-center gap-1.5 text-sm text-neutral-500">
-                <MapPin aria-hidden="true" className="size-4" />
-                {profile.location}
-              </p>
-            </div>
-
-            <div className="border-t border-neutral-200 pt-4">
-              <dl className="space-y-2.5">
-                <div className="flex items-center justify-between gap-3">
-                  <dt className="text-sm text-neutral-500">Member since</dt>
-                  <dd className="text-sm font-semibold text-neutral-900">
-                    {profile.memberSince}
-                  </dd>
-                </div>
-                <div className="flex items-center justify-between gap-3">
-                  <dt className="text-sm text-neutral-500">Nationality</dt>
-                  <dd className="text-sm font-semibold text-neutral-900">
-                    {profile.nationality}
-                  </dd>
-                </div>
-              </dl>
-
-              <Button className="mt-5 h-11 w-full gap-2 bg-brand text-base text-white hover:bg-brand-dark">
-                <Pencil aria-hidden="true" className="size-4" />
-                Edit Profile
-              </Button>
-            </div>
-          </Card>
-
+          <ProfileCart />
           <section aria-labelledby="travel-stats-heading">
             <h2
               id="travel-stats-heading"

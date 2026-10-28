@@ -8,6 +8,7 @@ import { Spinner } from "@/components/ui/spinner";
 import { toast } from "@/components/ui/toast";
 import { filterGraphicalNotStackedItems } from "recharts/types/state/selectors/axisSelectors";
 import { useRouter } from "next/navigation";
+import GoogleSignIn from "@/components/auth/GoogleSignIn";
 
 const inputClass =
   "h-9 w-full rounded border border-transparent bg-[#f4f7f9] pl-9 pr-3 text-sm text-neutral-900 transition-colors placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-brand/40";
@@ -158,16 +159,10 @@ export default function SignUpPage() {
         </form>
 
         <p className="my-4 text-center text-[13px] text-slate-500">
-          Or sign up with
+          Or continue with
         </p>
 
-        <button
-          type="button"
-          className="flex h-10 w-full cursor-pointer items-center justify-center gap-2.5 rounded border border-neutral-200 bg-white text-sm text-neutral-900 transition-colors hover:bg-neutral-50 focus-visible:ring-3 focus-visible:ring-brand/40 focus-visible:outline-none"
-        >
-          <GoogleIcon className="size-4" />
-          Sign Up With Google
-        </button>
+        <GoogleSignIn />
 
         <p className="mt-5 text-center text-[13px] text-slate-500">
           Already have an account?{" "}

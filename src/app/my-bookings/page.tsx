@@ -1,16 +1,22 @@
-import type { Metadata } from "next"
-import { BookingCard } from "@/components/my-bookings-comp/booking-card"
-import { UserBookingData } from "@/types/UserBooking";
-
+import type { Metadata } from "next";
+import { BookingCard } from "@/components/my-bookings-comp/booking-card";
+import { auth } from "@/lib/auth";
+import { headers } from "next/headers";
+import { UserBookingData } from "@/types/destinactionBook";
+import NoDataFound from "../../components/my-bookings-comp/NoDataFound";
 export const metadata: Metadata = {
   title: "My Bookings — Wanderlast",
-}
-
+};
 
 export default async function MyBookingsPage() {
-  const res = await fetch('http://localhost:5000/add-travel-package');
-  const bookings:UserBookingData = await res.json();
-
+  const session = await auth.api.getSession({
+    headers: await headers(),
+  });
+  const res = await fetch(
+    `http://localhost:5000/add-travel-package/${session?.user.email}`,
+  );
+  const bookings: UserBookingData = await res.json();
+  console.log("booking data--> ", bookings.bookedData);
   return (
     <main className="flex-1">
       <div className="mx-auto w-full max-w-7xl px-5 pt-14 pb-24 sm:px-6 lg:px-8 lg:pt-16">
@@ -22,11 +28,15 @@ export default async function MyBookingsPage() {
         </p>
 
         <div className="mt-8 space-y-5">
-          {bookings.map((booking) => (
-            <BookingCard key={booking._id} booking={booking} />
-          ))}
+          {bookings.bookedData.length > 0 ? (
+            bookings?.bookedData?.map((booking) => (
+              <BookingCard key={booking.id} booking={booking} />
+            ))
+          ) : (
+            <NoDataFound />
+          )}
         </div>
       </div>
     </main>
-  )
+  );
 }

@@ -1,22 +1,10 @@
-"use client";
-
 import Image from "next/image";
-import {
-  Calendar,
-  ClipboardList,
-  Eye,
-  Trash2,
-  type LucideIcon,
-} from "lucide-react";
-import { cn } from "cn";
-import { UserBooking } from "@/types/UserBooking";
+import { Calendar, ClipboardList, Eye, Trash2 } from "lucide-react";
+import { BookedItem } from "@/types/destinactionBook";
+import Link from "next/link";
+import CancelButton from "./CancelButton";
 
-type BookingCardProps = {
-  booking: UserBooking;
-  /** Wire this up when the cancel flow is implemented. */
-};
-
-export function BookingCard({ booking }: BookingCardProps) {
+export function BookingCard({ booking }: { booking: BookedItem }) {
   return (
     <article className="flex flex-col gap-6 rounded-md border border-neutral-200 bg-white p-5 sm:flex-row">
       <Image
@@ -48,7 +36,7 @@ export function BookingCard({ booking }: BookingCardProps) {
                 className="size-4 shrink-0 text-neutral-500"
                 strokeWidth={1.5}
               />
-              Booking ID: b1
+              Booking ID: {booking.bookingId}
             </p>
           </div>
         </div>
@@ -58,26 +46,14 @@ export function BookingCard({ booking }: BookingCardProps) {
             ${booking.price}
           </p>
           <div className="ml-auto flex gap-4">
-            <button
-              type="button"
-              // onClick={onCancel}
-              className="inline-flex h-11 select-none items-center justify-center gap-2 rounded-md border border-red-500 bg-white px-5 text-base font-medium whitespace-nowrap text-red-500 transition-colors hover:bg-red-50 focus-visible:ring-3 focus-visible:ring-red-500/40 focus-visible:outline-none"
-            >
-              <Trash2
-                aria-hidden="true"
-                className="size-4.5"
-                strokeWidth={1.5}
-              />
-              Cancel
-            </button>
-            <button
-              type="button"
-              // onClick={onView}
+            <CancelButton id={booking.id} />
+            <Link
+              href={`/destinations-details/${booking.id}`}
               className="inline-flex h-11 select-none items-center justify-center gap-2 rounded-md bg-brand px-5 text-base font-medium whitespace-nowrap text-white transition-colors hover:bg-brand-dark focus-visible:ring-3 focus-visible:ring-brand/40 focus-visible:outline-none"
             >
               <Eye aria-hidden="true" className="size-4.5" strokeWidth={1.5} />
               View
-            </button>
+            </Link>
           </div>
         </div>
       </div>
