@@ -4,6 +4,7 @@ import { useState, type ReactNode } from "react";
 import { ChevronDown, Save, Trash2 } from "lucide-react";
 import { cn } from "cn";
 import { Spinner } from "@/components/ui/spinner";
+import { authClient } from "@/lib/auth-client";
 const inputClass =
   "h-12 w-full rounded bg-[#f4f7f9] px-4 text-base text-neutral-900 transition-colors placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-brand/40";
 
@@ -56,13 +57,19 @@ export default function AddNewTravelPackagePage() {
         return acc;
       }, []);
     const filteredData = { ...data, highlights };
-    const res = await fetch("http://localhost:5000/destination-data", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
+
+    const { data: authTokenData, error } = await authClient.token();
+    const res = await fetch(
+      `${process.env.NEXT_PUBLIC_API_URL}/destination-data`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          authorization: `Bearer ${authTokenData?.token}`,
+        },
+        body: JSON.stringify(filteredData),
       },
-      body: JSON.stringify(filteredData),
-    });
+    );
     const result = await res.json();
     if (result.insertedId) {
       setLoading(false);
@@ -213,9 +220,9 @@ export default function AddNewTravelPackagePage() {
                 Cancel
               </button>
               <button
-               disabled = {isLoading}
+                disabled={isLoading}
                 type="submit"
-                className={`${isLoading ? 'bg-[#d6f1f7] cursor-not-allowed':''} cursor-pointer inline-flex h-12 select-none items-center justify-center gap-2 rounded-md bg-brand px-6 text-base font-medium whitespace-nowrap text-white transition-colors hover:bg-brand-dark focus-visible:ring-3 focus-visible:ring-brand/40 focus-visible:outline-none`}
+                className={`${isLoading ? "bg-[#d6f1f7] cursor-not-allowed" : ""} cursor-pointer inline-flex h-12 select-none items-center justify-center gap-2 rounded-md bg-brand px-6 text-base font-medium whitespace-nowrap text-white transition-colors hover:bg-brand-dark focus-visible:ring-3 focus-visible:ring-brand/40 focus-visible:outline-none`}
               >
                 {isLoading ? (
                   <Spinner data-icon="inline-start" className="inline" />

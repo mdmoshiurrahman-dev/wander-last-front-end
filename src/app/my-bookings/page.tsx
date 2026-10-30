@@ -12,11 +12,18 @@ export default async function MyBookingsPage() {
   const session = await auth.api.getSession({
     headers: await headers(),
   });
+  const jwt = await auth.api.getToken({
+    headers: await headers(),
+  });
   const res = await fetch(
-    `http://localhost:5000/add-travel-package/${session?.user.email}`,
+    `${process.env.NEXT_PUBLIC_API_URL}/add-travel-package/${session?.user.email}`,
+    {
+      headers: {
+        authorization: `Bearer ${jwt.token}`,
+      },
+    },
   );
   const bookings: UserBookingData = await res.json();
-  console.log("booking data--> ", bookings.bookedData);
   return (
     <main className="flex-1">
       <div className="mx-auto w-full max-w-7xl px-5 pt-14 pb-24 sm:px-6 lg:px-8 lg:pt-16">

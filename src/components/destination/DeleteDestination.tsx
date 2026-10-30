@@ -17,7 +17,7 @@ import {
 const DeleteDestination = ({ id, name }: { id: string; name?: string }) => {
   const router = useRouter();
   const handelDelete = async () => {
-    const res = await fetch(`http://localhost:5000/delete-destination/${id}`);
+    const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/delete-destination/${id}`);
     const result = await res.json();
     if (result.deletedCount > 0) {
       router.push("/explore-all-destinations");

@@ -73,7 +73,7 @@ export function DestinationEditDialogBox({
       }, []);
     const filteredData = { ...data, highlights, _id: destination._id };
     console.log(filteredData);
-    const res = await fetch("http://localhost:5000/update-travel-package", {
+    const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/update-travel-package`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",

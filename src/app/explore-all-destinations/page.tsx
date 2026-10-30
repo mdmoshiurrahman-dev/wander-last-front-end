@@ -9,7 +9,7 @@ export const instant = false;
 
 async function getDestinations(): Promise<UserBookingData> {
   try {
-    const res = await fetch("http://localhost:5000/destination-data");
+    const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/destination-data`);
     if (!res.ok) return [];
     const data: UserBookingData = await res.json();
     return data
