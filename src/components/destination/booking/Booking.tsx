@@ -1,7 +1,7 @@
 "use client";
 import { Spinner } from "@/components/ui/spinner";
 import { toast } from "@/components/ui/toast";
-import { useSession } from "@/lib/auth-client";
+import { authClient, useSession } from "@/lib/auth-client";
 import { UserBooking } from "@/types/UserBooking";
 import { ArrowRight } from "lucide-react";
 import React, { useState } from "react";
@@ -20,6 +20,8 @@ function Booking({ destination }: { destination: UserBooking }) {
     e.preventDefault();
     const formData = new FormData(e.currentTarget);
     const data = Object.fromEntries(formData.entries());
+    console.log(data);
+    const { data: jwtTokenData, error } = await authClient.token();
     const completedBookingData = {
       email: session.data?.user.email,
       ...data,
@@ -29,15 +31,16 @@ function Booking({ destination }: { destination: UserBooking }) {
       bookingId: generateRandomId(),
       imageUrl: destination.imageUrl,
     };
-    const result = await fetch("http://localhost:5000/add_user_booking_data", {
+
+    const result = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/add_user_booking_data`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
+        authorization: `Bearer ${jwtTokenData?.token}`,
       },
       body: JSON.stringify(completedBookingData),
     });
     const response = await result.json();
-    console.log(response);
     if (response.success) {
       setIsLoading(false);
       toast.add({
@@ -61,6 +64,7 @@ function Booking({ destination }: { destination: UserBooking }) {
           className="py-3 bg-gray-100 px-2"
         />
         <button
+          disabled={isLoading}
           type="submit"
           className="bg-brand py-3 text-white cursor-pointer"
         >

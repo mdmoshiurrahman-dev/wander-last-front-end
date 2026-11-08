@@ -1,5 +1,5 @@
 "use client";
-import { useSession } from "@/lib/auth-client";
+import { authClient, useSession } from "@/lib/auth-client";
 import { Trash2 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import React from "react";
@@ -9,10 +9,12 @@ const CancelButton = ({ id }: { id: string }) => {
   const email = useSession().data?.user.email;
   const router = useRouter();
   const handelCancelButton = async () => {
-    const res = await fetch("http://localhost:5000/request_delete_booking", {
+    const { data, error } = await authClient.token();
+    const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/request_delete_booking`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
+        authorization: `Bearer ${data?.token}`
       },
       body: JSON.stringify({ id, email }),
     });
