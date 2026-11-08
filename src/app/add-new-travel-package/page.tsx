@@ -71,6 +71,7 @@ export default function AddNewTravelPackagePage() {
       },
     );
     const result = await res.json();
+    console.log(result)
     if (result.insertedId) {
       setLoading(false);
     }
