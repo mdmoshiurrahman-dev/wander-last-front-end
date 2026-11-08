@@ -5,21 +5,12 @@ import { UserBookingData } from "@/types/UserBooking";
 export const metadata: Metadata = {
   title: "Explore All Destinations — Wanderlast",
 };
-export const instant = false;
-
-async function getDestinations(): Promise<UserBookingData> {
-  try {
-    const res = await fetch("http://localhost:5000/destination-data");
-    if (!res.ok) return [];
-    const data: UserBookingData = await res.json();
-    return data
-  } catch {
-    return [];
-  }
-}
 
 export default async function ExploreAllDestinationsPage() {
-  const destinations = await getDestinations();
+  const res = await fetch(
+    `${process.env.NEXT_PUBLIC_API_URL}/destination-data`,
+  );
+  const destinations: UserBookingData = await res.json();
 
   return (
     <main className="flex-1">
